@@ -55,8 +55,18 @@ export class ExtractionService {
           throw new Error('Empty response from LLM');
         }
 
+        // Strip markdown code fences if present (some models wrap JSON)
+        let cleanedResponse = responseText.trim();
+        if (cleanedResponse.startsWith('```')) {
+          // Remove opening fence (```json or just ```)
+          cleanedResponse = cleanedResponse.replace(/^```(?:json|JSON)?\s*/, '');
+          // Remove closing fence
+          cleanedResponse = cleanedResponse.replace(/\s*```$/, '');
+          cleanedResponse = cleanedResponse.trim();
+        }
+
         // Parse and validate JSON
-        const parsedData = JSON.parse(responseText);
+        const parsedData = JSON.parse(cleanedResponse);
         const validatedData = ExtractedClaimDataSchema.parse(parsedData);
 
         return validatedData;
