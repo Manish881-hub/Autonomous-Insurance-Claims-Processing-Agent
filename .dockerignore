@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+dist
+.env
+.env.*
+uploads
+test-data
+*.md
+.git
+.gitignore
+.eslintrc.js
+jest.config.js
+nodemon.json
+coverage
+*.test.ts
