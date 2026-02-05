@@ -9,77 +9,82 @@ import { z } from 'zod';
  */
 
 export class ExtractionService {
-    private openai: OpenAI;
+  private openai: OpenAI;
 
-    constructor() {
-        this.openai = new OpenAI({
-            apiKey: env.OPENAI_API_KEY,
+  constructor() {
+    this.openai = new OpenAI({
+      apiKey: env.OPENROUTER_API_KEY || 'sk-or-v1-dummy-key-for-testing',
+      baseURL: env.OPENROUTER_BASE_URL,
+      defaultHeaders: {
+        'HTTP-Referer': 'https://github.com/Manish881-hub/Autonomous-Insurance-Claims-Processing-Agent',
+        'X-Title': 'Insurance Claims Processing Agent',
+      },
+    });
+  }
+
+  /**
+   * Extract structured claim data from raw text
+   * @param rawText - Cleaned text from document parser
+   * @returns Structured claim data
+   */
+  async extractClaimData(rawText: string): Promise<ExtractedClaimData> {
+    const prompt = this.buildExtractionPrompt(rawText);
+
+    let attempts = 0;
+    let lastError: Error | null = null;
+
+    while (attempts < env.LLM_MAX_RETRIES) {
+      try {
+        const completion = await this.openai.chat.completions.create({
+          model: env.LLM_MODEL,
+          temperature: env.LLM_TEMPERATURE,
+          messages: [
+            {
+              role: 'system',
+              content: this.getSystemPrompt(),
+            },
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
         });
-    }
 
-    /**
-     * Extract structured claim data from raw text
-     * @param rawText - Cleaned text from document parser
-     * @returns Structured claim data
-     */
-    async extractClaimData(rawText: string): Promise<ExtractedClaimData> {
-        const prompt = this.buildExtractionPrompt(rawText);
-
-        let attempts = 0;
-        let lastError: Error | null = null;
-
-        while (attempts < env.LLM_MAX_RETRIES) {
-            try {
-                const completion = await this.openai.chat.completions.create({
-                    model: env.LLM_MODEL,
-                    temperature: env.LLM_TEMPERATURE,
-                    messages: [
-                        {
-                            role: 'system',
-                            content: this.getSystemPrompt(),
-                        },
-                        {
-                            role: 'user',
-                            content: prompt,
-                        },
-                    ],
-                });
-
-                const responseText = completion.choices[0]?.message?.content;
-                if (!responseText) {
-                    throw new Error('Empty response from LLM');
-                }
-
-                // Parse and validate JSON
-                const parsedData = JSON.parse(responseText);
-                const validatedData = ExtractedClaimDataSchema.parse(parsedData);
-
-                return validatedData;
-
-            } catch (error: any) {
-                attempts++;
-                lastError = error;
-                console.error(`⚠️  Extraction attempt ${attempts} failed:`, error.message);
-
-                if (attempts >= env.LLM_MAX_RETRIES) {
-                    break;
-                }
-
-                // Wait before retry (exponential backoff)
-                await this.sleep(1000 * attempts);
-            }
+        const responseText = completion.choices[0]?.message?.content;
+        if (!responseText) {
+          throw new Error('Empty response from LLM');
         }
 
-        throw new Error(
-            `LLM extraction failed after ${env.LLM_MAX_RETRIES} attempts: ${lastError?.message}`
-        );
+        // Parse and validate JSON
+        const parsedData = JSON.parse(responseText);
+        const validatedData = ExtractedClaimDataSchema.parse(parsedData);
+
+        return validatedData;
+
+      } catch (error: any) {
+        attempts++;
+        lastError = error;
+        console.error(`⚠️  Extraction attempt ${attempts} failed:`, error.message);
+
+        if (attempts >= env.LLM_MAX_RETRIES) {
+          break;
+        }
+
+        // Wait before retry (exponential backoff)
+        await this.sleep(1000 * attempts);
+      }
     }
 
-    /**
-     * Get system prompt for LLM
-     */
-    private getSystemPrompt(): string {
-        return `You are an expert insurance claims data extraction system. Your task is to extract structured information from First Notice of Loss (FNOL) insurance documents.
+    throw new Error(
+      `LLM extraction failed after ${env.LLM_MAX_RETRIES} attempts: ${lastError?.message}`
+    );
+  }
+
+  /**
+   * Get system prompt for LLM
+   */
+  private getSystemPrompt(): string {
+    return `You are an expert insurance claims data extraction system. Your task is to extract structured information from First Notice of Loss (FNOL) insurance documents.
 
 CRITICAL RULES:
 1. Output ONLY valid JSON - no additional text, explanations, or markdown
@@ -91,13 +96,13 @@ CRITICAL RULES:
 7. Be precise - only extract what is clearly stated
 
 You must follow the exact schema structure provided in the user prompt.`;
-    }
+  }
 
-    /**
-     * Build extraction prompt with schema and example
-     */
-    private buildExtractionPrompt(rawText: string): string {
-        return `Extract structured claim data from the following FNOL document.
+  /**
+   * Build extraction prompt with schema and example
+   */
+  private buildExtractionPrompt(rawText: string): string {
+    return `Extract structured claim data from the following FNOL document.
 
 OUTPUT SCHEMA (you must follow this exactly):
 {
@@ -149,14 +154,14 @@ DOCUMENT TEXT:
 ${rawText}
 
 Extract the data and return ONLY the JSON object. Do not include any other text.`;
-    }
+  }
 
-    /**
-     * Sleep utility for retry backoff
-     */
-    private sleep(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+  /**
+   * Sleep utility for retry backoff
+   */
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 }
 
 export const extractionService = new ExtractionService();

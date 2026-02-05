@@ -6,12 +6,13 @@ dotenv.config();
 const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     PORT: z.string().transform(Number).default('3000'),
-    OPENAI_API_KEY: z.string().min(1, 'OpenAI API key is required'),
+    OPENROUTER_API_KEY: z.string().optional().default(''),
     MAX_FILE_SIZE_MB: z.string().transform(Number).default('10'),
     UPLOAD_DIR: z.string().default('./uploads'),
-    LLM_MODEL: z.string().default('gpt-4'),
+    LLM_MODEL: z.string().default('mistralai/mistral-small-3'),
     LLM_TEMPERATURE: z.string().transform(Number).default('0'),
     LLM_MAX_RETRIES: z.string().transform(Number).default('3'),
+    OPENROUTER_BASE_URL: z.string().default('https://openrouter.ai/api/v1'),
 });
 
 const parseEnv = () => {
