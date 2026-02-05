@@ -66,6 +66,19 @@ export class ExtractionService {
         lastError = error;
         console.error(`⚠️  Extraction attempt ${attempts} failed:`, error.message);
 
+        // Log detailed error info from OpenRouter
+        if (error.response) {
+          console.error('OpenRouter Response Error:', {
+            status: error.response.status,
+            statusText: error.response.statusText,
+            data: error.response.data,
+          });
+        }
+
+        if (error.error) {
+          console.error('OpenRouter API Error:', error.error);
+        }
+
         if (attempts >= env.LLM_MAX_RETRIES) {
           break;
         }
