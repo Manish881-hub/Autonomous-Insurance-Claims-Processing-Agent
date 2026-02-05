@@ -13,6 +13,17 @@ An AI-powered backend service that automates FNOL (First Notice of Loss) insuran
 - **🐳 Docker Ready**: Fully containerized for easy deployment
 - **🧪 Tested**: Comprehensive test coverage with Jest
 
+## 📸 Interface Preview
+
+<div align="center">
+  <img src="assets/screenshots/landing-hero.png" alt="FNOLite Landing Page" width="100%" />
+</div>
+
+### Intelligent Claims Console
+<div align="center">
+  <img src="assets/screenshots/console.png" alt="Claims Processing Console" width="100%" />
+</div>
+
 ## 🏗️ Architecture
 
 ```mermaid
