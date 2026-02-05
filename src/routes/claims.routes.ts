@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { claimsController } from '../controllers/claims.controller';
 import { upload } from '../middleware/upload.middleware';
 
-const router = Router();
+const router: Router = Router();
 
 /**
  * POST /api/claims/process
