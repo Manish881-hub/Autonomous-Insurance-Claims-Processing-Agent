@@ -1,0 +1,57 @@
+{
+    "extractedFields": {
+        "policyInformation": {
+            "policyNumber": "POL-2024-112233",
+            "policyholderName": "Jennifer Lopez",
+            "effectiveDates": {
+                "startDate": "2024-01-01",
+                "endDate": "2025-01-01"
+            }
+        },
+        "incidentInformation": {
+            "incidentDate": "2024-02-19",
+            "incidentTime": "10:30",
+            "incidentLocation": "Shopping center parking lot, 890 Commerce Drive, Austin, TX 78701",
+            "incidentDescription": "While shopping, another vehicle backed into my car in the parking lot. The damage is minor, limited to a small dent and some scratches on the front passenger door panel. The vehicle is still fully drivable and safe."
+        },
+        "involvedParties": {
+            "claimant": {
+                "name": "Jennifer Lopez",
+                "contactDetails": {
+                    "phone": "(512) 555-7788",
+                    "email": "jlopez@email.com",
+                    "address": "234 Riverside Drive, Austin, TX 78704"
+                }
+            },
+            "thirdParties": [
+                {
+                    "name": "David Kim",
+                    "role": "At-fault driver",
+                    "contactDetails": {
+                        "phone": "(512) 555-9901",
+                        "email": "dkim@email.com"
+                    }
+                }
+            ]
+        },
+        "assetDetails": {
+            "assetType": "Vehicle",
+            "assetId": "VIN-5FNRL6H73KB123456",
+            "estimatedDamage": 1850
+        },
+        "mandatoryFields": {
+            "claimType": "Auto Property Damage",
+            "attachments": [
+                "Photos of dent",
+                "Contact info exchange"
+            ],
+            "initialEstimate": 1850
+        }
+    },
+    "missingFields": [],
+    "recommendedRoute": "Fast Track",
+    "reasoning": "This claim has been routed to **Fast Track** based on the following analysis:\n\n**Decision Factors:**\n1. Estimated damage ($1850) is below fast track threshold ($25000)\n\n**Claim Summary:**\n- Policy Number: POL-2024-112233\n- Claim Type: Auto Property Damage\n- Estimated Damage: $1,850\n- Incident Date: 2024-02-19\n- Location: Shopping center parking lot, 890 Commerce Drive, Austin, TX 78701\n\n**Next Steps:**\nThis claim qualifies for expedited processing. Settlement decision expected within 2-3 business days.",
+    "triggeredRules": [
+        "Estimated damage ($1850) is below fast track threshold ($25000)"
+    ]
+}

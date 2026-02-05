@@ -5,7 +5,7 @@ An AI-powered backend service that automates FNOL (First Notice of Loss) insuran
 ## ✨ Features
 
 - **📄 Document Processing**: Supports PDF and TXT file uploads
-- **🤖 AI Extraction**: Uses OpenAI GPT-4 for intelligent data extraction
+- **🤖 AI Extraction**: Uses OpenRouter API with Mistral for intelligent data extraction
 - **✅ Validation Engine**: Detects missing mandatory fields and validates data quality  
 - **🔀 Smart Routing**: Priority-based routing with 5 workflow categories
 - **📝 Explainable AI**: Generates human-readable routing justifications
@@ -41,7 +41,7 @@ Claims are routed based on priority (highest to lowest):
 ## 🛠️ Technology Stack
 
 - **Backend**: Node.js, Express.js, TypeScript
-- **AI/LLM**: OpenAI GPT-4
+- **AI/LLM**: OpenRouter API with Mistral 7B Instruct
 - **Validation**: Zod
 - **File Processing**: pdf-parse, Multer
 - **Testing**: Jest
@@ -50,7 +50,7 @@ Claims are routed based on priority (highest to lowest):
 ## 📋 Prerequisites
 
 - Node.js 20+ or Docker
-- OpenAI API key
+- OpenRouter API key (free tier available at https://openrouter.ai)
 
 ## ⚡ Quick Start
 
@@ -71,9 +71,9 @@ Claims are routed based on priority (highest to lowest):
    ```bash
    cp .env.example .env
    ```
-   Then edit `.env` and add your OpenAI API key:
+   Then edit `.env` and add your OpenRouter API key:
    ```
-   OPENAI_API_KEY=your_actual_api_key_here
+   OPENROUTER_API_KEY=your_actual_api_key_here
    ```
 
 4. **Start development server**
@@ -88,10 +88,10 @@ The API will be available at `http://localhost:3000`
 1. **Set environment variable**
    ```bash
    # Windows PowerShell
-   $env:OPENAI_API_KEY="your_actual_api_key_here"
+   $env:OPENROUTER_API_KEY="your_actual_api_key_here"
    
    # Linux/Mac
-   export OPENAI_API_KEY=your_actual_api_key_here
+   export OPENROUTER_API_KEY=your_actual_api_key_here
    ```
 
 2. **Run with Docker Compose**
@@ -126,52 +126,34 @@ document: <PDF or TXT file>
 **Example using curl:**
 ```bash
 curl -X POST http://localhost:3000/api/claims/process \
-  -F "document=@test-data/sample-fnol-complete.txt"
+  -F "document=@test-data/sample-fnol-fast-track.txt"
 ```
 
 **Example using PowerShell:**
 ```powershell
 $form = @{
-    document = Get-Item -Path "test-data\sample-fnol-complete.txt"
+    document = Get-Item -Path "test-data\sample-fnol-fast-track.txt"
 }
 Invoke-RestMethod -Uri "http://localhost:3000/api/claims/process" -Method Post -Form $form
 ```
 
-**Response:**
+**Real API Response Example:**
+
+See [`examples/sample-response.json`](examples/sample-response.json) for a complete real-world API response showing:
+- ✅ All extracted fields with actual data
+- ✅ Fast Track routing decision
+- ✅ Human-readable reasoning explanation
+- ✅ Triggered business rules
+
+**Response Summary:**
 ```json
 {
-  "extractedFields": {
-    "policyInformation": {
-      "policyNumber": "POL-2024-987654",
-      "policyholderName": "Sarah Mitchell",
-      "effectiveDates": {
-        "startDate": "2024-01-01",
-        "endDate": "2025-01-01"
-      }
-    },
-    "incidentInformation": {
-      "incidentDate": "2024-02-15",
-      "incidentTime": "14:30",
-      "incidentLocation": "1234 Main Street, Springfield, IL 62701",
-      "incidentDescription": "While driving southbound..."
-    },
-    "involvedParties": { ... },
-    "assetDetails": {
-      "assetType": "Vehicle",
-      "assetId": "VIN-1HGBH41JXMN109186",
-      "estimatedDamage": 3200
-    },
-    "mandatoryFields": {
-      "claimType": "Auto Property Damage",
-      "attachments": ["Photos of damage", "Police report #IL-2024-00123"],
-      "initialEstimate": 3200
-    }
-  },
+  "extractedFields": { /* Structured policy, incident, and asset data */ },
   "missingFields": [],
   "recommendedRoute": "Fast Track",
-  "reasoning": "This claim has been routed to **Fast Track** based on the following analysis:\n\n**Decision Factors:**\n1. Estimated damage ($3,200) is below fast track threshold ($25,000)...",
+  "reasoning": "This claim has been routed to **Fast Track**...",
   "triggeredRules": [
-    "Estimated damage ($3,200) is below fast track threshold ($25,000)"
+    "Estimated damage ($1850) is below fast track threshold ($25000)"
   ]
 }
 ```
@@ -214,9 +196,10 @@ Key environment variables (see `.env.example`):
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `PORT` | Server port | 3000 |
-| `OPENAI_API_KEY` | OpenAI API key | *Required* |
+| `OPENROUTER_API_KEY` | OpenRouter API key (optional for free tier) | "" |
+| `OPENROUTER_BASE_URL` | OpenRouter API base URL | https://openrouter.ai/api/v1 |
 | `MAX_FILE_SIZE_MB` | Max upload size | 10 |
-| `LLM_MODEL` | OpenAI model | gpt-4 |
+| `LLM_MODEL` | LLM model | mistralai/mistral-7b-instruct |
 | `LLM_TEMPERATURE` | Temperature (0-2) | 0 |
 | `LLM_MAX_RETRIES` | Retry attempts | 3 |
 
@@ -288,6 +271,7 @@ Developed as part of the Autonomous Insurance Claims Processing System
 
 ## 🙏 Acknowledgments
 
-- OpenAI for GPT-4 API
+- OpenRouter for providing accessible LLM API access
+- Mistral AI for the Mistral 7B Instruct model
 - pdf-parse library maintainers
 - Express.js and TypeScript communities
