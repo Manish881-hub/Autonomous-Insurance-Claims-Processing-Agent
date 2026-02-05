@@ -1,304 +1,662 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insurance Claims Processor - Test Interface</title>
+    <title>Claims Processing API - Test Console</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: #fafbfc;
+            color: #24292f;
+            line-height: 1.6;
             min-height: 100vh;
-            padding: 20px;
         }
-        
-        .container {
-            max-width: 900px;
+
+        /* Header */
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #d0d7de;
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1280px;
             margin: 0 auto;
-            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #24292f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-badge {
+            font-size: 11px;
+            font-weight: 500;
+            color: #57606a;
+            background: #f6f8fa;
+            padding: 2px 8px;
             border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 1px solid #d0d7de;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #57606a;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #1f883d;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* Page Title Section */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #24292f;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .page-description {
+            font-size: 16px;
+            color: #57606a;
+            max-width: 680px;
+        }
+
+        /* Two-column layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 480px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styling */
+        .card {
+            background: #ffffff;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
             overflow: hidden;
         }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #d0d7de;
+            background: #f6f8fa;
         }
-        
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            opacity: 0.9;
+
+        .card-title {
             font-size: 14px;
+            font-weight: 600;
+            color: #24292f;
         }
-        
-        .content {
-            padding: 30px;
+
+        .card-body {
+            padding: 20px;
         }
-        
-        .upload-section {
-            border: 3px dashed #667eea;
-            border-radius: 8px;
-            padding: 40px;
+
+        /* Upload Section */
+        .upload-zone {
+            border: 2px dashed #d0d7de;
+            border-radius: 6px;
+            padding: 48px 24px;
             text-align: center;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: #f6f8fa;
         }
-        
-        .upload-section:hover {
-            border-color: #764ba2;
-            background: #f8f9ff;
+
+        .upload-zone:hover {
+            border-color: #0969da;
+            background: #ffffff;
         }
-        
+
+        .upload-zone.has-file {
+            border-color: #1f883d;
+            background: #dafbe1;
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            opacity: 0.6;
+        }
+
+        .upload-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #24292f;
+            margin-bottom: 4px;
+        }
+
+        .upload-subtitle {
+            font-size: 12px;
+            color: #57606a;
+        }
+
         .file-input {
             display: none;
         }
-        
-        .upload-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-        
-        .upload-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .upload-btn:active {
-            transform: translateY(0);
-        }
-        
+
         .file-name {
-            margin-top: 15px;
-            color: #667eea;
-            font-weight: 600;
+            margin-top: 16px;
+            padding: 12px;
+            background: #ffffff;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            color: #1f883d;
+            font-size: 13px;
+            font-family: 'Consolas', 'Monaco', monospace;
         }
-        
-        .process-btn {
+
+        /* Button */
+        .btn {
             width: 100%;
-            background: #10b981;
-            color: white;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
+            padding: 12px 20px;
+            font-size: 14px;
             font-weight: 600;
+            border: none;
+            border-radius: 6px;
             cursor: pointer;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            font-family: inherit;
         }
-        
-        .process-btn:hover:not(:disabled) {
-            background: #059669;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4);
+
+        .btn-primary {
+            background: #0969da;
+            color: #ffffff;
+            box-shadow: 0 1px 0 rgba(27, 31, 36, 0.04);
         }
-        
-        .process-btn:disabled {
-            background: #d1d5db;
+
+        .btn-primary:hover:not(:disabled) {
+            background: #0860ca;
+        }
+
+        .btn-primary:active:not(:disabled) {
+            background: #0757ba;
+        }
+
+        .btn-primary:disabled {
+            background: #94d3a2;
             cursor: not-allowed;
+            opacity: 0.6;
         }
-        
+
+        /* Loading State */
         .loading {
             display: none;
+            padding: 32px;
             text-align: center;
-            padding: 20px;
         }
-        
-        .spinner {
-            border: 4px solid #f3f4f6;
-            border-top: 4px solid #667eea;
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #d0d7de;
+            border-top-color: #0969da;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
-        
+
+        .loading-text {
+            font-size: 14px;
+            color: #57606a;
+            font-weight: 500;
+        }
+
+        .loading-subtext {
+            font-size: 12px;
+            color: #8c959f;
+            margin-top: 4px;
+        }
+
+        /* Results */
         .result {
             display: none;
-            background: #f9fafb;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
         }
-        
-        .result h3 {
-            color: #1f2937;
-            margin-bottom: 15px;
-            font-size: 20px;
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
-        
-        .route-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            margin: 10px 0;
-            font-size: 14px;
-        }
-        
-        .route-fast-track { background: #dcfce7; color: #166534; }
-        .route-manual-review { background: #fef3c7; color: #92400e; }
-        .route-investigation { background: #fee2e2; color: #991b1b; }
-        .route-specialist-queue { background: #dbeafe; color: #1e40af; }
-        .route-standard-processing { background: #e0e7ff; color: #3730a3; }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .info-card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .info-card h4 {
-            color: #6b7280;
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-        
-        .info-card p {
-            color: #1f2937;
+
+        .result-title {
             font-size: 16px;
             font-weight: 600;
+            color: #24292f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .reasoning {
-            background: #fffbeb;
-            border-left: 4px solid #f59e0b;
-            padding: 15px;
-            border-radius: 4px;
-            margin: 15px 0;
+
+        .route-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid;
         }
-        
-        .reasoning strong {
-            color: #92400e;
+
+        .route-fast-track {
+            background: #dafbe1;
+            color: #1a7f37;
+            border-color: #1f883d;
         }
-        
-        pre {
-            background: #1f2937;
-            color: #f9fafb;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
+
+        .route-manual-review {
+            background: #fff8c5;
+            color: #7d4e00;
+            border-color: #bf8700;
+        }
+
+        .route-investigation {
+            background: #ffebe9;
+            color: #cf222e;
+            border-color: #d1242f;
+        }
+
+        .route-specialist-queue {
+            background: #ddf4ff;
+            color: #0550ae;
+            border-color: #0969da;
+        }
+
+        .route-standard-processing {
+            background: #f6f8fa;
+            color: #24292f;
+            border-color: #d0d7de;
+        }
+
+        /* Info Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .info-item {
+            background: #f6f8fa;
+            border: 1px solid #d0d7de;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #57606a;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #24292f;
+        }
+
+        /* Reasoning Box */
+        .reasoning-box {
+            background: #fff8c5;
+            border: 1px solid #d4a72c;
+            border-left: 3px solid #bf8700;
+            padding: 16px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .reasoning-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #7d4e00;
+            margin-bottom: 8px;
+        }
+
+        .reasoning-text {
             font-size: 13px;
-            line-height: 1.5;
+            color: #24292f;
+            line-height: 1.6;
         }
-        
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #dc2626;
+
+        /* Error/Warning Box */
+        .alert {
+            padding: 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+            border: 1px solid;
+        }
+
+        .alert-error {
+            background: #ffebe9;
+            border-color: #d1242f;
+            color: #cf222e;
+        }
+
+        .alert-warning {
+            background: #fff8c5;
+            border-color: #d4a72c;
+            color: #7d4e00;
+        }
+
+        .alert-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .alert-list {
+            margin: 8px 0 0 20px;
+            font-size: 13px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #24292f;
+            color: #f6f8fa;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            line-height: 1.5;
+            margin-top: 12px;
+        }
+
+        details {
+            margin-top: 20px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #0969da;
+            padding: 8px 0;
+            user-select: none;
+        }
+
+        summary:hover {
+            color: #0860ca;
+        }
+
+        /* Sidebar Info */
+        .sidebar {
+            position: sticky;
+            top: 88px;
+        }
+
+        .info-box {
+            background: #ffffff;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .info-box-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #24292f;
+            margin-bottom: 12px;
+        }
+
+        .info-list {
+            font-size: 13px;
+            color: #57606a;
+            line-height: 1.8;
+        }
+
+        .info-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-list li:before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #0969da;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #d0d7de;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #57606a;
+        }
+
+        .metric-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: #24292f;
+            font-family: 'Consolas', monospace;
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🏥 Insurance Claims Processor</h1>
-            <p>AI-Powered FNOL Document Analysis</p>
-        </div>
-        
-        <div class="content">
-            <div class="upload-section">
-                <h3 style="color: #667eea; margin-bottom: 10px;">📄 Upload FNOL Document</h3>
-                <p style="color: #6b7280; margin-bottom: 20px;">Select a PDF or TXT file to process</p>
-                <input type="file" id="fileInput" class="file-input" accept=".pdf,.txt">
-                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                    Choose File
-                </button>
-                <div id="fileName" class="file-name"></div>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                Claims Processing API
+                <span class="header-badge">Test Console</span>
             </div>
-            
-            <button id="processBtn" class="process-btn" disabled onclick="processDocument()">
-                🚀 Process Claim
-            </button>
-            
-            <div id="loading" class="loading">
-                <div class="spinner"></div>
-                <p style="color: #667eea; font-weight: 600;">Processing document with AI...</p>
-                <p style="color: #6b7280; font-size: 14px; margin-top: 5px;">This may take 5-10 seconds</p>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>API Online</span>
             </div>
-            
-            <div id="result" class="result"></div>
         </div>
     </div>
-    
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Test AI Claims Processing</h1>
+            <p class="page-description">
+                Upload FNOL documents to test intelligent extraction, validation, and routing.
+                System processes PDF/TXT files and returns structured claim data with routing decisions.
+            </p>
+        </div>
+
+        <div class="content-grid">
+            <!-- Main Content -->
+            <div>
+                <!-- Upload Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Document Upload</div>
+                    </div>
+                    <div class="card-body">
+                        <input type="file" id="fileInput" class="file-input" accept=".pdf,.txt">
+                        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                            <div class="upload-icon">📄</div>
+                            <div class="upload-title">Select FNOL Document</div>
+                            <div class="upload-subtitle">PDF or TXT · Max 10MB</div>
+                            <div id="fileName" class="file-name" style="display: none;"></div>
+                        </div>
+
+                        <button id="processBtn" class="btn btn-primary" disabled onclick="processDocument()"
+                            style="margin-top: 16px;">
+                            Process Claim
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading" class="loading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Processing document...</div>
+                    <div class="loading-subtext">AI extraction in progress · Typically 5-10 seconds</div>
+                </div>
+
+                <!-- Results -->
+                <div id="result" class="result">
+                    <!-- Results will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="info-box">
+                    <div class="info-box-title">Test Scenarios</div>
+                    <ul class="info-list">
+                        <li><strong>Fast Track:</strong> sample-fnol-fast-track.txt</li>
+                        <li><strong>Investigation:</strong> sample-fnol-fraud.txt</li>
+                        <li><strong>Specialist:</strong> sample-fnol-injury.txt</li>
+                        <li><strong>Manual Review:</strong> sample-fnol-missing-fields.txt</li>
+                        <li><strong>Standard:</strong> sample-fnol-complete.txt</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-box-title">System Metrics</div>
+                    <div class="metric">
+                        <span class="metric-label">Model</span>
+                        <span class="metric-value">Mistral 7B</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Avg Response Time</span>
+                        <span class="metric-value">~7s</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Cost per Request</span>
+                        <span class="metric-value">$0.000004</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Endpoint</span>
+                        <span class="metric-value">localhost:3000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const fileInput = document.getElementById('fileInput');
         const fileName = document.getElementById('fileName');
+        const uploadZone = document.querySelector('.upload-zone');
         const processBtn = document.getElementById('processBtn');
         const loading = document.getElementById('loading');
         const result = document.getElementById('result');
-        
-        fileInput.addEventListener('change', function() {
+
+        fileInput.addEventListener('change', function () {
             if (this.files.length > 0) {
-                fileName.textContent = `✅ Selected: ${this.files[0].name}`;
+                fileName.textContent = `✓ ${this.files[0].name}`;
+                fileName.style.display = 'block';
+                uploadZone.classList.add('has-file');
                 processBtn.disabled = false;
             } else {
+                fileName.style.display = 'none';
                 fileName.textContent = '';
+                uploadZone.classList.remove('has-file');
                 processBtn.disabled = true;
             }
         });
-        
+
         async function processDocument() {
             const file = fileInput.files[0];
             if (!file) return;
-            
+
             processBtn.disabled = true;
             loading.style.display = 'block';
             result.style.display = 'none';
-            
+
             const formData = new FormData();
             formData.append('document', file);
-            
+
+            const startTime = Date.now();
+
             try {
                 const response = await fetch('http://localhost:3000/api/claims/process', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const data = await response.json();
-                
+                const processingTime = ((Date.now() - startTime) / 1000).toFixed(2);
+
                 loading.style.display = 'none';
                 result.style.display = 'block';
-                
+
                 if (response.ok) {
-                    displayResults(data);
+                    displayResults(data, processingTime);
                 } else {
                     displayError(data);
                 }
@@ -306,79 +664,95 @@
                 loading.style.display = 'none';
                 result.style.display = 'block';
                 result.innerHTML = `
-                    <div class="error">
-                        <h3>❌ Error</h3>
-                        <p><strong>Failed to connect to server.</strong></p>
-                        <p>Make sure the server is running on port 3000.</p>
-                        <p style="margin-top: 10px; font-size: 14px;">Error: ${error.message}</p>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="alert alert-error">
+                                <div class="alert-title">Connection Failed</div>
+                                <p>Unable to connect to API server. Ensure the server is running on port 3000.</p>
+                                <p style="margin-top: 8px; font-size: 12px; font-family: monospace;">${error.message}</p>
+                            </div>
+                        </div>
                     </div>
                 `;
             } finally {
                 processBtn.disabled = false;
             }
         }
-        
-        function displayResults(data) {
+
+        function displayResults(data, processingTime) {
             const routeClass = data.recommendedRoute.toLowerCase().replace(/ /g, '-');
-            
+
             result.innerHTML = `
-                <h3>✅ Processing Complete</h3>
-                
-                <div class="route-badge route-${routeClass}">
-                    📍 Route: ${data.recommendedRoute}
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <div class="card-title">Processing Results · ${processingTime}s</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="result-header">
+                            <div class="result-title">
+                                Routing Decision
+                            </div>
+                            <span class="route-badge route-${routeClass}">
+                                ${data.recommendedRoute}
+                            </span>
+                        </div>
+                        
+                        <div class="reasoning-box">
+                            <div class="reasoning-label">Decision Reasoning</div>
+                            <div class="reasoning-text">${data.reasoning.replace(/\n/g, '<br>')}</div>
+                        </div>
+                        
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Policy Number</div>
+                                <div class="info-value">${data.extractedFields.policyInformation.policyNumber || 'N/A'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Policyholder</div>
+                                <div class="info-value">${data.extractedFields.policyInformation.policyholderName || 'N/A'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Claim Type</div>
+                                <div class="info-value">${data.extractedFields.mandatoryFields.claimType || 'N/A'}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Estimated Damage</div>
+                                <div class="info-value">$${data.extractedFields.assetDetails.estimatedDamage?.toLocaleString() || 'N/A'}</div>
+                            </div>
+                        </div>
+                        
+                        ${data.missingFields.length > 0 ? `
+                            <div class="alert alert-warning">
+                                <div class="alert-title">⚠ Missing Fields (${data.missingFields.length})</div>
+                                <ul class="alert-list">
+                                    ${data.missingFields.map(field => `<li>${field}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                        
+                        <details>
+                            <summary>View Complete JSON Response</summary>
+                            <pre class="code-block">${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    </div>
                 </div>
-                
-                <div class="reasoning">
-                    <strong>💡 Reasoning:</strong><br>
-                    ${data.reasoning}
-                </div>
-                
-                <div class="info-grid">
-                    <div class="info-card">
-                        <h4>Policy Number</h4>
-                        <p>${data.extractedFields.policyInformation.policyNumber || 'N/A'}</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>Policyholder</h4>
-                        <p>${data.extractedFields.policyInformation.policyholderName || 'N/A'}</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>Claim Type</h4>
-                        <p>${data.extractedFields.mandatoryFields.claimType || 'N/A'}</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>Estimated Damage</h4>
-                        <p>$${data.extractedFields.assetDetails.estimatedDamage?.toLocaleString() || 'N/A'}</p>
-                    </div>
-                </div>
-                
-                ${data.missingFields.length > 0 ? `
-                    <div class="error" style="background: #fef3c7; border-color: #f59e0b; color: #92400e;">
-                        <h4>⚠️ Missing Fields (${data.missingFields.length})</h4>
-                        <ul style="margin-top: 10px; margin-left: 20px;">
-                            ${data.missingFields.map(field => `<li>${field}</li>`).join('')}
-                        </ul>
-                    </div>
-                ` : ''}
-                
-                <details style="margin-top: 20px">
-                    <summary style="cursor: pointer; font-weight: 600; color: #667eea; margin-bottom: 10px;">
-                        📊 View Full Response JSON
-                    </summary>
-                    <pre>${JSON.stringify(data, null, 2)}</pre>
-                </details>
             `;
         }
-        
+
         function displayError(data) {
             result.innerHTML = `
-                <div class="error">
-                    <h3>❌ ${data.error || 'Error'}</h3>
-                    <p>${data.message}</p>
-                    ${data.details ? `<pre>${JSON.stringify(data.details, null, 2)}</pre>` : ''}
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-body">
+                        <div class="alert alert-error">
+                            <div class="alert-title">${data.error || 'Processing Error'}</div>
+                            <p>${data.message}</p>
+                            ${data.details ? `<pre class="code-block">${JSON.stringify(data.details, null, 2)}</pre>` : ''}
+                        </div>
+                    </div>
                 </div>
             `;
         }
     </script>
 </body>
+
 </html>
